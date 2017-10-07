@@ -80,10 +80,10 @@ export interface IStagedBoxArchiveDTO {
     Submitter_x0020_Email: string
 }
 
-// Recently Submitted Queue and Pending Archival DTO
+// Recently Submitted Queue DTO
 // Staged Box is a box that has been combined with its batch info so that it is ready to be added as a single entry
 // in the SP Recently Submitted Queue, DTO (data transfer object) refers to all of the fields corresponding to SP columns
-export interface IStagedBoxDTO {
+export interface IStagedBoxRecentQueueDTO {
     Object_x0020_Number: string
     Box_x0020_Number: string
     Beginning_x0020_Date_x0020_of_x0020_Records: string
@@ -92,7 +92,7 @@ export interface IStagedBoxDTO {
     Permanent: string
     Permanent_x0020_Review_x0020_Period: string
     Retention: string
-    Department_x0020_Number: string
+    Department_x0020_Number: number
     Department_x0020_name: string
     Department_x0020_Phone_x0020_Number: string
     Name_x0020_of_x0020_Person_x0020_Preparing_x0020_Records_x0020_for_x0020_Storage: string
@@ -101,9 +101,18 @@ export interface IStagedBoxDTO {
     Department_x0020_College: string
     Date_x0020_of_x0020_Prep_x002e_: string
     Special_x0020_Pickup_x0020_Instructions: string
-    Department_x0020_Info_x0020_Needs_x0020_Update: string
     Box_x0020_Description: string
     Review_x0020_Date: string
+    Changed: string
+}
+
+export interface IStagedBoxPendingArchivalDTO {
+    Box_x0020_Description: string
+    Beginning_x0020_Date_x0020_of_x0020_Records: string
+    Ending_x0020_Date_x0020_of_x0020_Records: string
+    Retention_x0020_Category: string
+    Department_x0020_name: string
+    Expected_x0020_Archival_x0020_Status: string
 }
 
 export interface IFullRetentionCategory {
@@ -113,6 +122,7 @@ export interface IFullRetentionCategory {
     permanentReviewPeriod: string
     retentionCategory: string
     retentionFunction: string
+    expectedArchivalStatus: string
 }
 
 export interface IFullRetentionCategoryDTO {
@@ -121,7 +131,8 @@ export interface IFullRetentionCategoryDTO {
     Period: string
     Perm_x0020_Review_x0020_Period: string
     Record_x0020_Category_x0020_ID: number
-    Function: string
+    Function: string,
+    Expected_x0020_Archival_x0020_St: string
 }
 
 export interface IDepartmentDataDTO {

@@ -6,7 +6,7 @@ import {
  } from '../utils/utils'
 import CurrentFormStore from '../stores/currentFormStore'
 import { StatusEnum } from '../stores/storeConstants'
-import { IStagedBoxArchiveDTO, Request, Box, BatchData, IStagedBoxDTO } from '../model/model';
+import { IStagedBoxArchiveDTO, Request, Box, BatchData, IStagedBoxRecentQueueDTO, IStagedBoxPendingArchivalDTO } from '../model/model';
 
 export const hostWebUrl = decodeURIComponent(getQueryStringParameter('SPHostUrl'));
 const appWebUrl = getQueryStringParameter('SPAppWebUrl');
@@ -20,6 +20,7 @@ const RECORD_LIAISON_EMAIL_COLUMN_NAME = 'Record_x0020_Liaison_x0020_Email'
 const RECORD_LIAISON_NET_ID_COLUMN_NAME = "Record_x0020_Liaison_x0020_Net_x"
 const DEPARTMENT_NUMBER_COLUMN_NAME = 'Department Number'
 const GENERAL_RETENTION_SCHEDULE_LIB = 'General Retention Schedule'
+const RECENTLY_SUBMITTED_QUEUE_LIST_NAME = 'Recently Submitted Queue'
 
 declare const $: any
 declare const jQuery: any
@@ -94,9 +95,10 @@ export function getUserDepartments(userIdentifier: string, adminStatus: boolean)
     })
 }
 
-export function saveFormPdfToSever(pdfArrayBuffer, folderName: string, fileName: string) {
+export function saveFormPdfToSever(pdfArrayBuffer, fileName: string, folderName?: string) {
+    const folderPath = folderName ? '/' + folderName : null
     return $.ajax({
-        url: `../_api/SP.AppContextSite(@target)/web/getfolderbyserverrelativeurl('${archiveLibraryUrl}/${folderName}')/files/add(overwrite=true,url='${fileName}')?@target='${hostWebUrl}'`,
+        url: `../_api/SP.AppContextSite(@target)/web/getfolderbyserverrelativeurl('${archiveLibraryUrl}${folderPath}')/files/add(overwrite=true,url='${fileName}')?@target='${hostWebUrl}'`,
         type: 'POST',
         processData: false,
         headers: {
@@ -126,10 +128,27 @@ export function saveFinalFormMetadataToArchive(fileName: string, folderName: str
     })
 }
 
-export function saveFinalFormMetadataToList(listName: string, data: {}, listUrl: string) {
+export function saveFinalFormMetadataToRecentQueue(data: IStagedBoxRecentQueueDTO) {
     const listReadyFormData = Object.assign({}, data, { __metadata: {'type': 'SP.Data.Records_x0020_Transfer_x0020_SheetsItem'} })
     return $.ajax({
-        url: `../_api/SP.AppContextSite(@target)//web/lists/getbytitle('${listName}')/items?@target='${hostWebUrl}'`,
+        url: `../_api/SP.AppContextSite(@target)//web/lists/getbytitle('${RECENTLY_SUBMITTED_QUEUE_LIST_NAME}')/items?@target='${hostWebUrl}'`,
+        type: 'POST',
+        contentType: 'application/json; odata=verbose',
+        headers: {
+           'accept': 'application/json;odata=verbose',
+           'X-RequestDigest': jQuery('#__REQUESTDIGEST').val(),
+            'contentType': 'application/json; odata=verbose',
+            'X-HTTP-Method': 'MERGE',
+            'IF-MATCH': '*'
+        },
+        data: JSON.stringify(listReadyFormData)
+    })
+}
+
+export function saveFinalFormMetadataToPendingArchival(data: IStagedBoxPendingArchivalDTO, filename: string) {
+    const listReadyFormData = Object.assign({}, data, { __metadata: {'type': 'SP.Data.Records_x0020_Transfer_x0020_SheetsItem'} })
+    return $.ajax({
+        url: `../_api/SP.AppContextSite(@target)/web/getfilebyserverrelativeurl('${archiveLibraryUrl}/${filename}')/listitemallfields?@target='${hostWebUrl}'`,
         type: 'POST',
         contentType: 'application/json; odata=verbose',
         headers: {

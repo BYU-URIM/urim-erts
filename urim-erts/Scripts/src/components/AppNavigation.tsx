@@ -35,8 +35,7 @@ const determineActiveTabFromPath = (path = '/') => {
 export const AppNavigation = (props) => (
     <Nav bsStyle='tabs'
         activeKey={determineActiveTabFromPath(props.displayedSubPath)}
-        onSelect={(eventKey) => handleSelect(eventKey, props)}
-    >
+        onSelect={(eventKey) => handleSelect(eventKey, props)}>
         <NavItem eventKey={1}>Manage Records</NavItem>
         <NavItem eventKey={2}>Admin</NavItem>
         <NavItem eventKey={3}>Settings</NavItem>

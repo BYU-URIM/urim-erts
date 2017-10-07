@@ -3,7 +3,7 @@ import { EMPTY_REQUEST } from './storeConstants'
 import UserStore from './userStore'
 import AdminStore from '../stores/adminStore'
 import AppStore from '../stores/appStore'
-import { getFormattedDateToday, getFormattedDate, transformRequestToStagedBoxDTOs, generateFolderNameFromRequest } from '../utils/utils';
+import { getFormattedDateToday, getFormattedDate, transformRequestToStagedBoxArchiveDTOs, generateFolderNameFromRequest, transformArchiveDtoToRecentQueueDto, transformArchiveDtoToPendingArchivalDto } from '../utils/utils';
 import SettingsStore from '../stores/settingsStore'
 import { incrementObjectNumber, formatLongStringForSaveKey } from '../utils/utils'
 import { observable, action, runInAction, computed } from 'mobx';
@@ -214,13 +214,23 @@ export default class CurrentFormStore {
         this._prepFormForArchival()
 
         const pdfBuffers = await currentFormToPDF(this.formData);
-        const stagedBoxDTOs = transformRequestToStagedBoxDTOs(this.formData)
+        const stagedBoxArchiveDTOs = transformRequestToStagedBoxArchiveDTOs(this.formData)
 
         for(let i = 0; i < this.formData.boxes.length; i++) {
             const folderName = generateFolderNameFromRequest(this.formData)
             const fileName = `${this.formData.boxes[i].objectNumber}.pdf`
-            await dao.saveFormPdfToSever(pdfBuffers[i], folderName, fileName)
-            await dao.saveFinalFormMetadataToArchive(fileName, folderName, stagedBoxDTOs[i])
+            
+            // save pdf and metadata to archive library (Records Transfer Sheets)
+            await dao.saveFormPdfToSever(pdfBuffers[i], fileName, folderName)
+            await dao.saveFinalFormMetadataToArchive(fileName, folderName, stagedBoxArchiveDTOs[i])
+
+            // save metadata to recently submitted queue
+            await dao.saveFinalFormMetadataToRecentQueue(transformArchiveDtoToRecentQueueDto(stagedBoxArchiveDTOs[i]))
+
+            // save pdf and metadata to pending archival
+            await dao.saveFormPdfToSever(pdfBuffers[i], fileName)
+            const fullRetCat: IFullRetentionCategory = this.fullRetentionCategories.find(retCat => retCat.retentionCategory === stagedBoxArchiveDTOs[i].Retention_x0020_Category)
+            await dao.saveFinalFormMetadataToPendingArchival(transformArchiveDtoToPendingArchivalDto(stagedBoxArchiveDTOs[i], fullRetCat), fileName)
         }
     
         // after archiving the form pdf and metadata, delete the form from the pending requests lists

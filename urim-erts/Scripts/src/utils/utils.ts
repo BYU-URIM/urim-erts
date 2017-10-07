@@ -1,4 +1,4 @@
-import { IStagedBoxArchiveDTO, Request, IFullRetentionCategoryDTO, IFullRetentionCategory, IDepartmentDataDTO, IFullDepartmentData } from '../model/model';
+import { IStagedBoxArchiveDTO, Request, IFullRetentionCategoryDTO, IFullRetentionCategory, IDepartmentDataDTO, IFullDepartmentData, IStagedBoxRecentQueueDTO, IStagedBoxPendingArchivalDTO } from '../model/model';
 export function getQueryStringParameter(paramToRetrieve) {
     var params =
         document.URL.split("?")[1].split("&");
@@ -53,7 +53,7 @@ export function transformBoxesDataToBoxesDtoList(boxesData) {
     })
 }
 
-export function transformRequestToStagedBoxDTOs(request: Request): Array<IStagedBoxArchiveDTO> {
+export function transformRequestToStagedBoxArchiveDTOs(request: Request): Array<IStagedBoxArchiveDTO> {
     return request.boxes.map(function(box, index) {
         return {
             Dept_x0020__x0023_: request.batchData.departmentNumber,
@@ -79,6 +79,42 @@ export function transformRequestToStagedBoxDTOs(request: Request): Array<IStaged
             Submitter_x0020_Email: request.batchData.submitterEmail
         }
     })
+}
+
+export function transformArchiveDtoToRecentQueueDto(archiveDto: IStagedBoxArchiveDTO): IStagedBoxRecentQueueDTO {
+    return {
+        Object_x0020_Number: archiveDto.Object_x0020_Number,
+        Box_x0020_Number: archiveDto.Box_x0020_Number,
+        Beginning_x0020_Date_x0020_of_x0020_Records: archiveDto.Date_x0020_From,
+        Ending_x0020_Date_x0020_of_x0020: archiveDto.Date_x0020_To,
+        Retention_x0020_Category: archiveDto.Retention_x0020_Category,
+        Permanent: archiveDto.Permanent,
+        Permanent_x0020_Review_x0020_Period: archiveDto.Permanent_x0020_Review_x0020_Period,
+        Retention: archiveDto.Retention,
+        Department_x0020_Number: archiveDto.Dept_x0020__x0023_,
+        Department_x0020_name: archiveDto.Department_x0020_name,
+        Department_x0020_Phone_x0020_Number: archiveDto.Department_x0020_Phone_x0020_Number,
+        Name_x0020_of_x0020_Person_x0020_Preparing_x0020_Records_x0020_for_x0020_Storage: archiveDto.Name_x0020_of_x0020_Person_x0020_Preparing_x0020_Records_x0020_for_x0020_Storage,
+        Name_x0020_of_x0020_Person_x0020_Responsable_x0020_for_x0020_Records_x0020_in_x0020_the_x0020_Department: archiveDto.Name_x0020_of_x0020_Person_x0020_Responsable_x0020_for_x0020_Records_x0020_in_x0020_the_x0020_Department,
+        Department_x0020_Address: archiveDto.Department_x0020_Address,
+        Department_x0020_College: archiveDto.Department_x0020_College,
+        Date_x0020_of_x0020_Prep_x002e_: archiveDto.Date_x0020_of_x0020_Prep_x002e_,
+        Special_x0020_Pickup_x0020_Instructions: archiveDto.Special_x0020_Pickup_x0020_Instructions,
+        Box_x0020_Description: archiveDto.Description0,
+        Review_x0020_Date: archiveDto.Review_x0020_Date,
+        Changed: archiveDto.Department_x0020_Info_x0020_Needs_x0020_Update
+    }
+}
+
+export function transformArchiveDtoToPendingArchivalDto(archiveDto: IStagedBoxArchiveDTO, fullRetCat: IFullRetentionCategory): IStagedBoxPendingArchivalDTO {
+    return {
+        Box_x0020_Description: archiveDto.Description0,
+        Beginning_x0020_Date_x0020_of_x0020_Records: archiveDto.Date_x0020_From,
+        Ending_x0020_Date_x0020_of_x0020_Records: archiveDto.Date_x0020_To,
+        Retention_x0020_Category: archiveDto.Retention_x0020_Category,
+        Department_x0020_name: archiveDto.Department_x0020_name,
+        Expected_x0020_Archival_x0020_Status: fullRetCat.expectedArchivalStatus
+    }
 }
 
 export function generateQueryFilterString(filterPairArray) {
@@ -110,7 +146,8 @@ export function transformRetCatDtosToFullRetCats(rawRetData): Array<IFullRetenti
             period: rawData.Period,
             permanentReviewPeriod: rawData.Perm_x0020_Review_x0020_Period,
             id: rawData.Record_x0020_Category_x0020_ID,
-            retentionFunction: rawData.Function
+            retentionFunction: rawData.Function,
+            expectedArchivalStatus: rawData.Expected_x0020_Archival_x0020_St
         }
     })
 }
