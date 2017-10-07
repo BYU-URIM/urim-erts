@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package dslVersion="1.0.0.0" 
+        Id="aef87978-fe3c-44e8-87ab-8148fc605585" 
+        solutionId="aef87978-fe3c-44e8-87ab-8148fc605585" 
+        xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel" 
+        name="urim_erts"
+        sharePointProductVersion="15.0">
+  <features>
+        <featureReference itemId="1c4b8c2c-9e8a-4958-9335-53c41a5c44a7" />
+  </features>
+</package>

@@ -1,0 +1,109 @@
+﻿/* Place custom styles below */
+.appContainer {
+    padding-left: 205px;
+    padding-top: 50px;
+}
+
+.userLayout {
+    margin-left: 20px;
+    margin-top: 30px;
+}
+
+.adminLayout {
+    margin-left: 20px;
+    margin-top: 30px;
+}
+
+.settingsLayout {
+    margin-left: 20px;
+}
+
+.homeLink {
+    margin-left: 20px;
+    margin-top: 50px
+}
+
+.requestsListContainer {
+    width: 700px;
+    margin-top: 15px;
+    margin-bottom: 50px;
+}
+
+.jumbotron {
+    padding: 0px 20px;
+    width: 700px;
+    margin-top: 15px;
+    min-height: 273px;
+}
+
+button.list-group-item.list-group-item-info {
+    background-color: #E8F2F6;
+}
+
+button.list-group-item {
+    /*background-color: #DAC2C2;*/
+    background-color: #CEC9C9;
+}
+
+ #newRequestButton {
+    margin: 20px 0px;
+}
+
+.newRequestAdminDropdown {
+    margin: 20px 0px;
+}
+
+.boxListPanel {
+    width: 72%;
+}
+
+.boxListButton {
+    margin-top: 10px;
+}
+
+#removeCommentButton {
+    margin-top: 20px;
+}
+
+#newRequestItemSelectionList {
+    margin-top: 20px;
+}
+
+#addBoxesHeader {
+    margin-top: 40px;
+}
+
+#boxesRequestedHeader {
+    margin-top: 40px;
+}
+
+#formFooterMessage {
+    width: 65%;
+    text-align: center;
+    display: inline;
+    margin-right: 30px;
+}
+
+#nextObjectNumberContainer {
+    margin-top: 50px;
+    width: 280px;
+}
+
+#removeBoxButton {
+    margin-left: 70%;
+}
+
+@media (max-width: 992px) {
+   #removeBoxButton {
+      display: none;
+   }
+}
+
+#depInfoChangeFlag {
+    margin-top: 10px;
+    margin-left: 6px
+}
+
+.preArchiveError {
+    width: 700px;
+}
