@@ -4,6 +4,8 @@
 # NPM dependencies
 node_modules/
 
+build/
+
 # User-specific files
 *.suo
 *.user
