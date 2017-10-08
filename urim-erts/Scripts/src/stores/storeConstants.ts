@@ -55,7 +55,9 @@ export const EMPTY_STAGED_BOX_DTO: IStagedBoxArchiveDTO = {
     Retention: null,
     Review_x0020_Date: null,
     Description0: null,
-    Submitter_x0020_Email: null
+    Submitter_x0020_Email: null,
+    Id: 0,
+    To_x0020_Be_x0020_Archived: 'Pending Decision'
 }
 
 export const StatusEnum = {

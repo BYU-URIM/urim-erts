@@ -53,10 +53,34 @@ export class Request {
     @observable spListId: number
 }
 
+// this data type represents any DTO that needs to keep track of a SharePoint ID
+export interface SpIdentifiableDto {
+    Id: number
+}
+
+//When a request is submitted, Batch Data, status, spListID, and boxes are combined into one object and saved into the Request Host List
+export interface IStagedRequestDTO extends SpIdentifiableDto {
+    Title: '_'
+    prepPersonName: string
+    departmentName: string
+    dateOfPreparation: string
+    departmentNumber: number 
+    departmentPhone: string
+    responsablePersonName: string
+    departmentAddress: string
+    departmentCollege: string
+    pickupInstructions: string
+    adminComments: string
+    status: string
+    boxes: string
+    departmentInfoChangeFlag: boolean
+    submitterEmail: string
+}
+
 // ARCHIVE DTO
 // Staged Box is a box that has been combined with its batch info so that it is ready to be added as a single entry
 // in the SP archive, DTO (data transfer object) refers to all of the fields corresponding to SP columns
-export interface IStagedBoxArchiveDTO {
+export interface IStagedBoxArchiveDTO extends SpIdentifiableDto {
     Dept_x0020__x0023_: number
     Department_x0020_name: string
     Department_x0020_Phone_x0020_Number: string
@@ -78,6 +102,7 @@ export interface IStagedBoxArchiveDTO {
     Review_x0020_Date: string
     Description0: string
     Submitter_x0020_Email: string
+    To_x0020_Be_x0020_Archived: ToBeArchivedOption
 }
 
 // Recently Submitted Queue DTO
@@ -86,33 +111,34 @@ export interface IStagedBoxArchiveDTO {
 export interface IStagedBoxRecentQueueDTO {
     Object_x0020_Number: string
     Box_x0020_Number: string
-    Beginning_x0020_Date_x0020_of_x0020_Records: string
+    Beginning_x0020_Date_x0020_of_x0: string
     Ending_x0020_Date_x0020_of_x0020: string
     Retention_x0020_Category: string
     Permanent: string
-    Permanent_x0020_Review_x0020_Period: string
+    Permanent_x0020_Review_x0020_Per: string
     Retention: string
     Department_x0020_Number: number
     Department_x0020_name: string
-    Department_x0020_Phone_x0020_Number: string
-    Name_x0020_of_x0020_Person_x0020_Preparing_x0020_Records_x0020_for_x0020_Storage: string
-    Name_x0020_of_x0020_Person_x0020_Responsable_x0020_for_x0020_Records_x0020_in_x0020_the_x0020_Department: string
+    Department_x0020_Phone_x0020_Num: string
+    Name_x0020_of_x0020_Person_x0020: string
+    Name_x0020_of_x0020_Person_x00200: string
     Department_x0020_Address: string
     Department_x0020_College: string
-    Date_x0020_of_x0020_Prep_x002e_: string
-    Special_x0020_Pickup_x0020_Instructions: string
+    Date_x0020_of_x0020_Preparation: string
+    Special_x0020_Pickup_x0020_Instr: string
     Box_x0020_Description: string
     Review_x0020_Date: string
-    Changed: string
+    Changed: boolean
 }
 
-export interface IStagedBoxPendingArchivalDTO {
+export interface IStagedBoxPendingArchivalDTO extends SpIdentifiableDto {
     Box_x0020_Description: string
     Beginning_x0020_Date_x0020_of_x0020_Records: string
     Ending_x0020_Date_x0020_of_x0020_Records: string
     Retention_x0020_Category: string
     Department_x0020_name: string
     Expected_x0020_Archival_x0020_Status: string
+    To_x0020_Be_x0020_Archived: ToBeArchivedOption
 }
 
 export interface IFullRetentionCategory {
@@ -152,3 +178,5 @@ export interface IFullDepartmentData {
     departmentCollege: string
     responsiblePersonName: string
 }
+
+export type ToBeArchivedOption = 'Yes' | 'No' | 'Pending Decision' | ''

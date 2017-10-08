@@ -1,4 +1,5 @@
-import { IStagedBoxArchiveDTO, Request, IFullRetentionCategoryDTO, IFullRetentionCategory, IDepartmentDataDTO, IFullDepartmentData, IStagedBoxRecentQueueDTO, IStagedBoxPendingArchivalDTO } from '../model/model';
+import { IStagedBoxArchiveDTO, Request, IFullRetentionCategoryDTO, IFullRetentionCategory, IDepartmentDataDTO, IFullDepartmentData, IStagedBoxRecentQueueDTO, IStagedBoxPendingArchivalDTO, IStagedRequestDTO, ToBeArchivedOption } from '../model/model';
+import { StatusEnum } from '../stores/storeConstants';
 export function getQueryStringParameter(paramToRetrieve) {
     var params =
         document.URL.split("?")[1].split("&");
@@ -76,7 +77,9 @@ export function transformRequestToStagedBoxArchiveDTOs(request: Request): Array<
             Retention: box.retention,
             Review_x0020_Date: box.reviewDate,
             Description0: formatLongStringForSaveKey(box.description),
-            Submitter_x0020_Email: request.batchData.submitterEmail
+            Submitter_x0020_Email: request.batchData.submitterEmail,
+            Id: request.spListId,
+            To_x0020_Be_x0020_Archived: box.permanent.toLowerCase() === 'yes' ? 'Pending Decision' as ToBeArchivedOption : ''
         }
     })
 }
@@ -85,24 +88,24 @@ export function transformArchiveDtoToRecentQueueDto(archiveDto: IStagedBoxArchiv
     return {
         Object_x0020_Number: archiveDto.Object_x0020_Number,
         Box_x0020_Number: archiveDto.Box_x0020_Number,
-        Beginning_x0020_Date_x0020_of_x0020_Records: archiveDto.Date_x0020_From,
+        Beginning_x0020_Date_x0020_of_x0: archiveDto.Date_x0020_From,
         Ending_x0020_Date_x0020_of_x0020: archiveDto.Date_x0020_To,
         Retention_x0020_Category: archiveDto.Retention_x0020_Category,
         Permanent: archiveDto.Permanent,
-        Permanent_x0020_Review_x0020_Period: archiveDto.Permanent_x0020_Review_x0020_Period,
+        Permanent_x0020_Review_x0020_Per: archiveDto.Permanent_x0020_Review_x0020_Period,
         Retention: archiveDto.Retention,
         Department_x0020_Number: archiveDto.Dept_x0020__x0023_,
         Department_x0020_name: archiveDto.Department_x0020_name,
-        Department_x0020_Phone_x0020_Number: archiveDto.Department_x0020_Phone_x0020_Number,
-        Name_x0020_of_x0020_Person_x0020_Preparing_x0020_Records_x0020_for_x0020_Storage: archiveDto.Name_x0020_of_x0020_Person_x0020_Preparing_x0020_Records_x0020_for_x0020_Storage,
-        Name_x0020_of_x0020_Person_x0020_Responsable_x0020_for_x0020_Records_x0020_in_x0020_the_x0020_Department: archiveDto.Name_x0020_of_x0020_Person_x0020_Responsable_x0020_for_x0020_Records_x0020_in_x0020_the_x0020_Department,
+        Department_x0020_Phone_x0020_Num: archiveDto.Department_x0020_Phone_x0020_Number,
+        Name_x0020_of_x0020_Person_x0020: archiveDto.Name_x0020_of_x0020_Person_x0020_Preparing_x0020_Records_x0020_for_x0020_Storage,
+        Name_x0020_of_x0020_Person_x00200: archiveDto.Name_x0020_of_x0020_Person_x0020_Responsable_x0020_for_x0020_Records_x0020_in_x0020_the_x0020_Department,
         Department_x0020_Address: archiveDto.Department_x0020_Address,
         Department_x0020_College: archiveDto.Department_x0020_College,
-        Date_x0020_of_x0020_Prep_x002e_: archiveDto.Date_x0020_of_x0020_Prep_x002e_,
-        Special_x0020_Pickup_x0020_Instructions: archiveDto.Special_x0020_Pickup_x0020_Instructions,
+        Date_x0020_of_x0020_Preparation: archiveDto.Date_x0020_of_x0020_Prep_x002e_,
+        Special_x0020_Pickup_x0020_Instr: archiveDto.Special_x0020_Pickup_x0020_Instructions,
         Box_x0020_Description: archiveDto.Description0,
         Review_x0020_Date: archiveDto.Review_x0020_Date,
-        Changed: archiveDto.Department_x0020_Info_x0020_Needs_x0020_Update
+        Changed: archiveDto.Department_x0020_Info_x0020_Needs_x0020_Update === 'yes'? true : false
     }
 }
 
@@ -113,7 +116,9 @@ export function transformArchiveDtoToPendingArchivalDto(archiveDto: IStagedBoxAr
         Ending_x0020_Date_x0020_of_x0020_Records: archiveDto.Date_x0020_To,
         Retention_x0020_Category: archiveDto.Retention_x0020_Category,
         Department_x0020_name: archiveDto.Department_x0020_name,
-        Expected_x0020_Archival_x0020_Status: fullRetCat.expectedArchivalStatus
+        Expected_x0020_Archival_x0020_Status: fullRetCat.expectedArchivalStatus,
+        Id: archiveDto.Id,
+        To_x0020_Be_x0020_Archived: archiveDto.Permanent.toLowerCase() === 'yes' ? 'Pending Decision' : ''
     }
 }
 
@@ -150,6 +155,27 @@ export function transformRetCatDtosToFullRetCats(rawRetData): Array<IFullRetenti
             expectedArchivalStatus: rawData.Expected_x0020_Archival_x0020_St
         }
     })
+}
+
+export function transformRequestToStagedRequestDto(request: Request, intendedStatus: string): IStagedRequestDTO {
+    return {
+        Title: '_',
+        prepPersonName: request.batchData.prepPersonName,
+        departmentName: request.batchData.departmentName,
+        dateOfPreparation: request.batchData.dateOfPreparation,
+        departmentNumber: request.batchData.departmentNumber,
+        departmentPhone: request.batchData.departmentPhone,
+        responsablePersonName: request.batchData.responsablePersonName,
+        departmentAddress: request.batchData.departmentAddress,
+        departmentCollege: request.batchData.departmentCollege,
+        pickupInstructions: request.batchData.pickupInstructions,
+        adminComments: request.batchData.adminComments,
+        status: intendedStatus,
+        boxes: JSON.stringify(request.boxes),
+        departmentInfoChangeFlag: request.batchData.departmentInfoChangeFlag,
+        submitterEmail: request.batchData.submitterEmail,
+        Id: request.spListId
+    }
 }
 
 export function getFormattedDate(date) {
