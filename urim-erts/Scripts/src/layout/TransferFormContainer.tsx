@@ -71,11 +71,11 @@ export class TransferFormContainer extends React.Component<any, undefined> {
                         id='departmentPhone' onChange={this.appStore.currentFormStore.updateFormBatchData} validation={this.validateBatchComponent} />
                 </Row>
 
-                {/*Person Preparing Records,      Person Responsable for Records */}
+                {/*Person Preparing Records,      Person Responsible for Records */}
                 <Row>
                     <FieldGroup type='text' label='Name of Person Preparing Records for Storage*' value={this.appStore.currentFormStore.formData.batchData['prepPersonName']} span={4}
                         id='prepPersonName' onChange={this.appStore.currentFormStore.updateFormBatchData} validation={this.validateBatchComponent} />
-                    <FieldGroup type='text' label='Name of Person Responsable for Records in the Department*' value={this.appStore.currentFormStore.formData.batchData['responsablePersonName']} span={5}
+                    <FieldGroup type='text' label='Name of Person Responsible for Records in the Department*' value={this.appStore.currentFormStore.formData.batchData['responsablePersonName']} span={5}
                         id='responsablePersonName' onChange={this.appStore.currentFormStore.updateFormBatchData} validation={this.validateBatchComponent} />
                 </Row>
 
