@@ -26,13 +26,14 @@ export default class CurrentFormStore {
     @observable isDisplayForm: boolean = false
     @observable isSubmissionAttempted: boolean = false
     @observable isAddBoxesAtttempted: boolean = false
-    @observable isDisplayBoxList: boolean = false
     @observable canAdminReturnToUser: boolean = false
     @observable isDisplayCommentInput: boolean = false
     @observable uncachedAdminComments = null // store temporary input of admin comments
     @observable isSubmittingToServer: boolean = false
     @observable formFooterMessage: any = null
     @observable fullRetentionCategories: Array<IFullRetentionCategory> = []
+    @observable isDisplayAddBoxModule: boolean = !this.formData.boxes.length
+
 
     @action displayRequestForm(request) {
         this.isDisplayForm = true
@@ -40,11 +41,12 @@ export default class CurrentFormStore {
         // once a request is submittied (not closed) the old request will be updated
         this.formData = Object.assign(new Request(), request, { boxGroupData: new BoxGroupData() }) // give each request a new boxGroupData since they aren't saved
         this.formData.boxGroupData.numberOfBoxes = 1
-        this.isDisplayBoxList = this.formData.boxes.length === 1 // only display the box list by default if there is one box
+        this.isDisplayAddBoxModule = !this.formData.boxes.length // only display the box list by default if there is one box
     }
 
     @action displayNewRequestForm(departmentInfo?) {
         this.isDisplayForm = true
+        this.isDisplayAddBoxModule = true
         this.formData = new Request()
         this.formData.batchData.prepPersonName = this._appStore.userStore.currentUser
         this.formData.batchData.submitterEmail = this._appStore.userStore.currentUserEmail
@@ -70,7 +72,7 @@ export default class CurrentFormStore {
         this.isDisplayForm = false
         this.isSubmissionAttempted = false
         this.isAddBoxesAtttempted = false
-        this.isDisplayBoxList = false
+        this.isDisplayAddBoxModule = true
         this.canAdminReturnToUser = false
         this.isDisplayCommentInput = false
         this.uncachedAdminComments = null
@@ -107,7 +109,6 @@ export default class CurrentFormStore {
 
     @action removeBoxFromCurrentForm(index: number) {
         this.formData.boxes.splice(index, 1)
-        this.isDisplayBoxList = this.formData.boxes.length === 1 // only display the box list by default if there is one box
     }
 
     @action updateFormAdminComments(id: string, newValue: any) {
@@ -118,12 +119,13 @@ export default class CurrentFormStore {
         this.formData.batchData.adminComments = null
     }
 
-    @action toggleBoxListVisibility() {
-        this.isDisplayBoxList = !this.isDisplayBoxList
+    @action toggleAddBoxModuleVisibility() {
+        this.isDisplayAddBoxModule = !this.isDisplayAddBoxModule
     }
 
     @action addBoxesToRequest(number: number) {
         this._addBoxes(number)
+        this.isDisplayAddBoxModule = false
     }
 
     @action postFormFooterMessage(text, style, duration = 3000) {
@@ -288,25 +290,25 @@ export default class CurrentFormStore {
     @computed get canSubmit(): boolean {
         const { batchData } = this.formData
         
-            // first check to see if there are boxes added
-            if(!this.formData.boxes.length) {
+        // first check to see if there are boxes added
+        if(!this.formData.boxes.length) {
+            return false
+        }
+
+        // next check to see if all required batch data filds are present
+        if(!(batchData.departmentNumber && batchData.departmentName && batchData.departmentPhone && batchData.prepPersonName && batchData.departmentCollege
+            && batchData.responsablePersonName && batchData.departmentAddress && CurrentFormStore._dateRegEx.test(batchData.dateOfPreparation))) {
+                return false
+        }
+
+        for(let box of this.formData.boxes) {
+            if(!(box.boxNumber && box.description && CurrentFormStore._dateRegEx.test(box.beginningRecordsDate)
+                && CurrentFormStore._dateRegEx.test(box.endRecordsDate))) {
                 return false
             }
-    
-            // next check to see if all required batch data filds are present
-            if(!(batchData.departmentNumber && batchData.departmentName && batchData.departmentPhone && batchData.prepPersonName && batchData.departmentCollege
-                && batchData.responsablePersonName && batchData.departmentAddress && CurrentFormStore._dateRegEx.test(batchData.dateOfPreparation))) {
-                    return false
-            }
-    
-            for(let box of this.formData.boxes) {
-                if(!(box.boxNumber && box.description && CurrentFormStore._dateRegEx.test(box.beginningRecordsDate)
-                    && CurrentFormStore._dateRegEx.test(box.endRecordsDate))) {
-                    return false
-                }
-            }
-    
-            return true
+        }
+
+        return true
     }
 
     @computed get canAddBoxes(): boolean {
@@ -363,7 +365,6 @@ export default class CurrentFormStore {
             box.boxNumber = nextBoxNumber + i
             this.formData.boxes.push(box)
         }
-        this.isDisplayBoxList = this.formData.boxes.length === 1 // only display the box list by default if there is one box
     }
 
     private _getNextHighestBoxNumber() {

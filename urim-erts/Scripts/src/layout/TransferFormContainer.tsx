@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { FieldGroup } from '../components/FieldGroup'
-import { Grid, Row, Col, Button, Checkbox } from 'react-bootstrap'
+import { Grid, Row, Col, Button, Checkbox, Panel } from 'react-bootstrap'
 import CurrentFormStore from '../stores/currentFormStore';
 import { FormCommentWarning } from '../components/FormCommentWarning'
 import { BoxList } from '../components/BoxList'
@@ -108,7 +108,7 @@ export class TransferFormContainer extends React.Component<any, undefined> {
                     this.appStore.currentFormStore.formData.boxes.length ?
                     (
                         <Row>
-                            <BoxList expanded={this.appStore.currentFormStore.isDisplayBoxList} boxes={this.appStore.currentFormStore.formData.boxes} />
+                            <BoxList boxes={this.appStore.currentFormStore.formData.boxes} />
                         </Row>
                     ) : null
 
@@ -116,50 +116,55 @@ export class TransferFormContainer extends React.Component<any, undefined> {
 
                 {/* *** ADD BOXES *** */}
                 {this.props.type !== 'admin' &&
-                (<div>
-                    <Row><h3 id='addBoxesHeader'>Add Boxes to Request</h3></Row>
+                (<div style={{marginTop: 40}}>
+                    <Button onClick={this.appStore.currentFormStore.toggleAddBoxModuleVisibility}>Show Add Box Form</Button>
+                    <Panel collapsible expanded={this.appStore.currentFormStore.isDisplayAddBoxModule} className='boxListPanel'>
+                        <Row><h3 id='addBoxesHeader'>Add Boxes to Request</h3></Row>
 
-                    {/*Number of Boxes,    Beginning date of records,    Ending date of records*/}
-                    <Row>
-                        <FieldGroup id='numberOfBoxes' type='text' label='Number of Boxes*' span={3} value={this.appStore.currentFormStore.formData.boxGroupData['numberOfBoxes']}
-                            placeholder='12' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
-                        <FieldGroup id='beginningRecordsDate' type='text' label='Beginning date of records*' span={3} value={this.appStore.currentFormStore.formData.boxGroupData['beginningRecordsDate']}
-                            placeholder='mm/dd/yyyy' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
-                        <FieldGroup type='text' label='Ending date of records*' span={3} placeholder='mm/dd/yyyy' value={this.appStore.currentFormStore.formData.boxGroupData['endRecordsDate']}
-                            id='endRecordsDate' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
-                    </Row>
+                        {/*Number of Boxes,    Beginning date of records,    Ending date of records*/}
+                        <Row>
+                            <FieldGroup id='numberOfBoxes' type='text' label='Number of Boxes*' span={4} value={this.appStore.currentFormStore.formData.boxGroupData['numberOfBoxes']}
+                                placeholder='12' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
+                            <FieldGroup id='beginningRecordsDate' type='text' label='Beginning date of records*' span={4} value={this.appStore.currentFormStore.formData.boxGroupData['beginningRecordsDate']}
+                                placeholder='mm/dd/yyyy' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
+                            <FieldGroup type='text' label='Ending date of records*' span={4} placeholder='mm/dd/yyyy' value={this.appStore.currentFormStore.formData.boxGroupData['endRecordsDate']}
+                                id='endRecordsDate' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
+                        </Row>
 
-                    {/*Record Type,     Retention,     Permanent*/}
-                    <Row>
-                        <FieldGroup type='select' label='Function' span={3} placeholder='Administrative' value={this.appStore.currentFormStore.formData.boxGroupData.retentionFunction}
-                            options={this.appStore.currentFormStore.functionNames} id='retentionFunction' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
-                        <FieldGroup type='select' label='Record Category' span={3} placeholder='financial' value={this.appStore.currentFormStore.formData.boxGroupData['retentionCategory']} id='retentionCategory'
-                            options={this.appStore.currentFormStore.retentionCategoryNamesByFunction[this.appStore.currentFormStore.formData.boxGroupData.retentionFunction]} onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
-                        <FieldGroup type='select' label='Permanent' span={3} placeholder='select y/n' value={this.appStore.currentFormStore.formData.boxGroupData['permanent']}
-                            options={['', 'No', 'Yes']} id='permanent' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
-                    </Row>
+                        {/*Record Type,     Retention,     Permanent*/}
+                        <Row>
+                            <FieldGroup type='select' label='Function' span={4} placeholder='Administrative' value={this.appStore.currentFormStore.formData.boxGroupData.retentionFunction}
+                                options={this.appStore.currentFormStore.functionNames} id='retentionFunction' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
+                            <FieldGroup type='select' label='Record Category' span={4} placeholder='financial' value={this.appStore.currentFormStore.formData.boxGroupData['retentionCategory']} id='retentionCategory'
+                                options={this.appStore.currentFormStore.retentionCategoryNamesByFunction[this.appStore.currentFormStore.formData.boxGroupData.retentionFunction]} onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
+                            <FieldGroup type='select' label='Permanent' span={4} placeholder='select y/n' value={this.appStore.currentFormStore.formData.boxGroupData['permanent']}
+                                options={['', 'No', 'Yes']} id='permanent' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
+                        </Row>
 
-                    {/* Description */}
-                    <Row>
-                        <FieldGroup type='textarea' label='Description*' span={6} placeholder='description' value={this.appStore.currentFormStore.formData.boxGroupData['description']}
-                            id='description' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
-                        {
-                            this.appStore.currentFormStore.formData.boxGroupData['permanent'] === 'Yes'
-                            ? (
-                                <FieldGroup type='text' label='Permanent Review Period (years)' span={3} value={this.appStore.currentFormStore.formData.boxGroupData['permanentReviewPeriod']}
-                                    id='permanentReviewPeriod' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
-                            )
-                            : (
-                                <FieldGroup type='text' label='Retention (years)' span={3} value={this.appStore.currentFormStore.formData.boxGroupData['retention']}
-                                    id='retention' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
-                            )
-                        }
-                    </Row>
+                        {/* Description */}
+                        <Row>
+                            <FieldGroup type='textarea' label='Description*' span={8} placeholder='description' value={this.appStore.currentFormStore.formData.boxGroupData['description']}
+                                id='description' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
+                            {
+                                this.appStore.currentFormStore.formData.boxGroupData['permanent'] === 'Yes'
+                                ? (
+                                    <FieldGroup type='text' label='Permanent Review Period (years)' span={3} value={this.appStore.currentFormStore.formData.boxGroupData['permanentReviewPeriod']}
+                                        id='permanentReviewPeriod' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
+                                )
+                                : (
+                                    <FieldGroup type='text' label='Retention (years)' span={4} value={this.appStore.currentFormStore.formData.boxGroupData['retention']}
+                                        id='retention' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
+                                )
+                            }
+                        </Row>
 
-                    <Row>
-                        <Col lg={3} md={3} sm={3}></Col>
-                        <Button onClick={this.onAddBoxes}>Add Boxes</Button>
-                    </Row>
+                        <Row>
+                            <Col sm={10} md={10} lg={10} />
+                            <Col sm={2} md={2} lg={2}>
+                                <Button block bsStyle='primary' onClick={this.onAddBoxes}>Add Boxes</Button>
+                            </Col>
+                        </Row>
+                    </Panel>
                 </div>)}
 
                 {/* **** ADMIN COMMENT INPUT *** (if applicable) */}
