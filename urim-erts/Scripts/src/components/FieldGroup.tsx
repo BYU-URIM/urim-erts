@@ -17,7 +17,7 @@ export const FieldGroup = observer((props: any) => {
             <Col lg={props.span} md={props.span} sm={props.span}>
                 <FormGroup className={props.className} controlId={props.id} validationState={props.validation ? props.validation(props.id, props.value) : null}>
                     <ControlLabel>{props.label}</ControlLabel>
-                    <FormControl value={props.value} onChange={(e) => props.onChange(props.id, e.target.value)} type='text' placeholder={props.placeholder} />
+                    <FormControl readOnly={props.readOnly} value={props.value} onChange={(e) => props.onChange(props.id, e.target.value)} type='text' placeholder={props.placeholder} />
                     <FormControl.Feedback />
                 </FormGroup>
             </Col>
@@ -27,7 +27,7 @@ export const FieldGroup = observer((props: any) => {
             <Col lg={props.span} md={props.span} sm={props.span}>
                 <FormGroup className={props.className} controlId={props.id}>
                     <ControlLabel>{props.label}</ControlLabel>
-                        <FormControl value={props.value} onChange={(e) => props.onChange(props.id, e.target.value)} componentClass="select" placeholder={props.placeholder}>
+                        <FormControl readOnly={props.readOnly} value={props.value} onChange={(e) => props.onChange(props.id, e.target.value)} componentClass="select" placeholder={props.placeholder}>
                             {
                                 props.options && props.options.map((option, index) => (
                                     <option value={option} key={index}>{option}</option>
@@ -42,7 +42,7 @@ export const FieldGroup = observer((props: any) => {
             <Col lg={props.span} md={props.span} sm={props.span}>
                 <FormGroup className={props.className} controlId={props.id} validationState={props.validation ? props.validation(props.id, props.value) : null}>
                     <ControlLabel>{props.label}</ControlLabel>
-                    <FormControl style={getTextAreaStyle(props.value)} value={props.value} onChange={(e) => props.onChange(props.id, e.target.value)} componentClass='textarea' placeholder={props.placeholder} />
+                    <FormControl readOnly={props.readOnly} style={getTextAreaStyle(props.value)} value={props.value} onChange={(e) => props.onChange(props.id, e.target.value)} componentClass='textarea' placeholder={props.placeholder} />
                     <FormControl.Feedback />
                 </FormGroup>
             </Col>
