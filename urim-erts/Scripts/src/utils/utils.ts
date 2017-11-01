@@ -116,7 +116,7 @@ export function transformArchiveDtoToPendingArchivalDto(archiveDto: IStagedBoxAr
         Ending_x0020_Date_x0020_of_x0020_Records: archiveDto.Date_x0020_To,
         Retention_x0020_Category: archiveDto.Retention_x0020_Category,
         Department_x0020_name: archiveDto.Department_x0020_name,
-        Expected_x0020_Archival_x0020_Status: fullRetCat.expectedArchivalStatus,
+        Expected_x0020_Archival_x0020_Status: fullRetCat ? fullRetCat.expectedArchivalStatus : 'No',
         Id: archiveDto.Id,
         To_x0020_Be_x0020_Archived: archiveDto.Permanent.toLowerCase() === 'yes' ? 'Pending Decision' : ''
     }
