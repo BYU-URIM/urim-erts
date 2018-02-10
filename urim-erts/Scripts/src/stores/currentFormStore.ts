@@ -95,7 +95,10 @@ export default class CurrentFormStore {
     @action updateFormBoxGroupData(id: string, newValue: any) {
         this.formData.boxGroupData[id] = newValue
         if(id === 'retention' || id === 'endRecordsDate') this._recalculateReviewDate(this.formData.boxGroupData)
-        if(id === 'permanent') this._applyDispositionUpdate(this.formData.boxGroupData, newValue)
+        if(id === 'permanent') {
+            this.formData.boxGroupData[id] = newValue ? 'Yes' : 'No'
+            this._applyDispositionUpdate(this.formData.boxGroupData, newValue ? 'Yes' : 'No')
+        }
         if(id === 'retentionCategory') this._applyRetentionCategoryUpdate(this.formData.boxGroupData, newValue)
     }
 
@@ -103,7 +106,10 @@ export default class CurrentFormStore {
         this.formData.boxes[index][id] = newValue
         // specialized functions for if a value with dependend autocalculated values changes
         if(id === 'retention' || id === 'endRecordsDate') this._recalculateReviewDate(this.formData.boxes[index])
-        if(id === 'permanent') this._applyDispositionUpdate(this.formData.boxes[index], newValue)
+        if(id === 'permanent') {
+            this.formData.boxes[index][id] = newValue = newValue ? 'Yes' : 'No'
+            this._applyDispositionUpdate(this.formData.boxes[index], newValue ? 'Yes' : 'No')
+        }
         if(id === 'retentionCategory') this._applyRetentionCategoryUpdate(this.formData.boxes[index], newValue)
     }
 
@@ -230,7 +236,7 @@ export default class CurrentFormStore {
             await dao.createFormMetadataInHostList<IStagedBoxRecentQueueDTO>(transformArchiveDtoToRecentQueueDto(stagedBoxArchiveDTOs[i]), dao.RECENTLY_SUBMITTED_QUEUE_LIST_NAME)
 
             // save pdf and metadata to pending archival
-            if(this.formData.boxes[i].permanent.toLowerCase() === 'yes') {
+            if(this.formData.boxes[i].permanent === 'Yes') {
                 await dao.createFormPdfInHostLibrary(pdfBuffers[i], fileName, dao.PENDING_ARCHIVAL_LIBRARY_NAME)
                 const fullRetCat: IFullRetentionCategory = this.fullRetentionCategories.find(retCat => retCat.retentionCategory === stagedBoxArchiveDTOs[i].Retention_x0020_Category)
                 await dao.updateFormMetadataInHostLibrary<IStagedBoxPendingArchivalDTO>(transformArchiveDtoToPendingArchivalDto(stagedBoxArchiveDTOs[i], fullRetCat), dao.PENDING_ARCHIVAL_LIBRARY_NAME, fileName)
@@ -432,9 +438,9 @@ export default class CurrentFormStore {
             box.permanent = boxRetentionCategory.permanent
             box.retention = boxRetentionCategory.period
             box.permanentReviewPeriod = boxRetentionCategory.permanentReviewPeriod
-            if(box.permanent === 'No') this._recalculateReviewDate(box)
+            if(!box.permanent) this._recalculateReviewDate(box)
         } else {
-            box.permanent = ''
+            box.permanent = 'No'
             box.retention = null
             box.permanentReviewPeriod = null
             box.reviewDate = null

@@ -54,14 +54,11 @@ export class BoxForm extends React.Component<any, undefined> {
                         <Row>
                             <FieldGroup type='select' label='Retention Category' span={3} placeholder='financial' value={this.props.box['retentionCategory']}
                                 options={AppStore.getInstance().currentFormStore.retentionCategoryNamesByFunction[this.props.box.retentionFunction]} id='retentionCategory' onChange={this.updateBoxFormComponent} />
-                            <FieldGroup type='select' label='Permanent' span={3} placeholder='select y/n' value={this.props.box['permanent']}
-                                options={[null, 'Yes', 'No']} id='permanent' onChange={this.updateBoxFormComponent} />
+                            <FieldGroup type='checkbox' label='Permanent' span={3} value={this.props.box['permanent'] === 'Yes'}
+                                id='permanent' onChange={this.updateBoxFormComponent} />
                             {
                                 this.props.box['permanent'] === 'Yes'
-                                ? (
-                                    <FieldGroup type='text' label='Permanent Review Period (years)' span={4} value={this.props.box['permanentReviewPeriod']}
-                                        id='permanentReviewPeriod' onChange={this.updateBoxFormComponent} />
-                                )
+                                ? null
                                 : ( <div>
                                         <FieldGroup type='text' label='Retention (years)' span={3} value={this.props.box['retention']}
                                             id='retention' onChange={this.updateBoxFormComponent} />
@@ -74,8 +71,11 @@ export class BoxForm extends React.Component<any, undefined> {
         
                         {/* Description */}
                         <Row>
-                            <FieldGroup type='textarea' label='Description*' span={9} placeholder='description' value={this.props.box['description']}
+                            <FieldGroup type='textarea' label='Description*' span={12} placeholder='description' value={this.props.box['description']}
                                 id='description' onChange={this.updateBoxFormComponent} validation={this.validateComponent} />
+                        </Row>
+                        <Row>
+                            <Col lg={10} md={10} sm={10} />
                             <Col lg={1} md={1} sm={1}>
                                 <Button style={this.deleteBoxButtonStyle} onClick={() => AppStore.getInstance().currentFormStore.removeBoxFromCurrentForm(this.props.index)} id='removeBoxButton' bsStyle='danger'>remove box</Button>
                             </Col>

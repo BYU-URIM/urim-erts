@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { observer } from 'mobx-react';
+import { Checkbox } from 'react-bootstrap';
 import {
     Form,
     FormControl,
@@ -45,6 +46,14 @@ export const FieldGroup = observer((props: any) => {
                     <FormControl readOnly={props.readOnly} style={getTextAreaStyle(props.value)} value={props.value} onChange={(e) => props.onChange(props.id, e.target.value)} componentClass='textarea' placeholder={props.placeholder} />
                     <FormControl.Feedback />
                 </FormGroup>
+            </Col>
+        )
+    } else if(props.type === "checkbox") {
+        return (
+            <Col lg={props.span} md={props.span} sm={props.span}>
+                <Checkbox onChange={(e) => props.onChange(props.id, e.target.checked)} checked={props.value}>
+                    {props.label}
+                </Checkbox>
             </Col>
         )
     }

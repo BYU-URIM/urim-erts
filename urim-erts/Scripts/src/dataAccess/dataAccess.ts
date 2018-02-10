@@ -333,3 +333,7 @@ function getMetadataAttributeForList(listName: string): string {
         default: throw new Error(`no metadata type for list ${listName} - look up the ListItemEntityTypeFullName attribute of the list and add it here`)
     }
 }
+
+export function createFormMetadataInFilemaker(data: IStagedBoxArchiveDTO) {
+    
+}

@@ -16,7 +16,7 @@
     <link rel="Stylesheet" type="text/css" href="../Content/App.css" />
 
     <!-- React Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
 </asp:Content>
 
 <%-- The markup in the following Content element will be placed in the TitleArea of the page --%>

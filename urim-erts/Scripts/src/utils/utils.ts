@@ -79,7 +79,7 @@ export function transformRequestToStagedBoxArchiveDTOs(request: Request): Array<
             Description0: formatLongStringForSaveKey(box.description),
             Submitter_x0020_Email: request.batchData.submitterEmail,
             Id: request.spListId,
-            To_x0020_Be_x0020_Archived: box.permanent.toLowerCase() === 'yes' ? 'Pending Decision' as ToBeArchivedOption : ''
+            To_x0020_Be_x0020_Archived: box.permanent ? 'Pending Decision' as ToBeArchivedOption : ''
         }
     })
 }
