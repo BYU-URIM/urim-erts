@@ -18,9 +18,11 @@ export class TransferFormContainer extends React.Component<any, undefined> {
         if(this.appStore.currentFormStore.isAddBoxesAtttempted) {
             // first check for date inputs which require special validation
             if(componentId === 'beginningRecordsDate' || componentId === 'endRecordsDate') {
-                return CurrentFormStore._dateRegEx.test(value) ? null : 'error'
+                return CurrentFormStore.dateRegEx.test(value) ? null : 'error'
             } else if(componentId === 'numberOfBoxes') {
                 return isNaN(value) || value < 1 ? 'error' : null
+            } else if(componentId === 'retention') {
+                return isNaN(value) ? 'error' : null
             }
             // genereic input check, any value indicates valid input, empty value indicates error
             return value ? null : 'error'
@@ -32,7 +34,7 @@ export class TransferFormContainer extends React.Component<any, undefined> {
     validateBatchComponent(componentId, value) {
         if(this.appStore.currentFormStore.isSubmissionAttempted) {
             if(componentId === 'dateOfPreparation') {
-                return CurrentFormStore._dateRegEx.test(value) ? null : 'error'
+                return CurrentFormStore.dateRegEx.test(value) ? null : 'error'
             }
             return value ? null : 'error'
         }
@@ -63,9 +65,9 @@ export class TransferFormContainer extends React.Component<any, undefined> {
                 {/*Dep. Number,     Dep. Name,      Dep. Phone*/}
                 <Row><h3>Department Information</h3></Row>
                 <Row>
-                    <FieldGroup type='text' label='Department Number*' value={this.appStore.currentFormStore.formData.batchData['departmentNumber']} span={2} placeholder='9892'
+                    <FieldGroup readOnly={this.props.type !== 'admin'} type='text' label='Department Number*' value={this.appStore.currentFormStore.formData.batchData['departmentNumber']} span={2} placeholder='9892'
                         id='departmentNumber' onChange={this.appStore.currentFormStore.updateFormBatchData} validation={this.validateBatchComponent} />
-                    <FieldGroup type='text' label='Department Name*' value={this.appStore.currentFormStore.formData.batchData['departmentName']} span={5} placeholder='Records Management'
+                    <FieldGroup readOnly={this.props.type !== 'admin'} type='text' label='Department Name*' value={this.appStore.currentFormStore.formData.batchData['departmentName']} span={5} placeholder='Records Management'
                         id='departmentName' onChange={this.appStore.currentFormStore.updateFormBatchData} validation={this.validateBatchComponent} />
                     <FieldGroup type='text' label='Department Phone # *' value={this.appStore.currentFormStore.formData.batchData['departmentPhone']} span={2} placeholder='801-555-5555 ext 3'
                         id='departmentPhone' onChange={this.appStore.currentFormStore.updateFormBatchData} validation={this.validateBatchComponent} />
@@ -141,7 +143,7 @@ export class TransferFormContainer extends React.Component<any, undefined> {
                                 ? null
                                 : (
                                     <FieldGroup type='text' label='Retention' span={2} value={this.appStore.currentFormStore.formData.boxGroupData['retention']}
-                                        id='retention' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} />
+                                        id='retention' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
                                 )
                             }
                         </Row>

@@ -21,10 +21,13 @@ export class BoxForm extends React.Component<any, undefined> {
 
     validateComponent(componentId, value) {
         if(AppStore.getInstance().currentFormStore.isSubmissionAttempted) {
-            if(componentId === 'beginningRecordsDate' || componentId === 'endRecordsDate') {
+            if(componentId === 'retention') {
+                return isNaN(value) ? 'error' : null
+            } else if(componentId === 'beginningRecordsDate' || componentId === 'endRecordsDate') {
                 return /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4}$/.test(value) ? null : 'error'
+            } else {
+                return value ? null : 'error' // default validation - check not null
             }
-            return value ? null : 'error'
         }
         return null
     }
@@ -61,7 +64,7 @@ export class BoxForm extends React.Component<any, undefined> {
                                 ? null
                                 : ( <div>
                                         <FieldGroup type='text' label='Retention (years)' span={3} value={this.props.box['retention']}
-                                            id='retention' onChange={this.updateBoxFormComponent} />
+                                            id='retention' onChange={this.updateBoxFormComponent} validation={this.validateComponent} />
                                         <FieldGroup type='text' label='Review Date' span={3} placeholder='' value={this.props.box['reviewDate']}
                                             id='reviewDate' onChange={ function(){} } /> {/* NOTE review date has dummy onChange function because it is a non-editable calculated value */}
                                     </div>

@@ -44,14 +44,16 @@ export function fetchNextArchivedObjectNumber() {
     })
 }
 
-export function saveNextObjectNumberToServer(objectNumber: string) {
+export async function saveNextObjectNumberToServer(objectNumber: string) {
+    const rawSecurityInfo = await fetchSecurityValidation()
+
     return $.ajax({
         url: '../_api/web/lists/getbytitle(\'Object_Number_Log\')/items',
         method: 'POST',
         contentType: 'application/json; odata=verbose',
         headers: {
             'Accept': 'application/json; odata=verbose',
-            'X-RequestDigest': $('#__REQUESTDIGEST').val(),
+            'X-RequestDigest': rawSecurityInfo.d.GetContextWebInformation.FormDigestValue,
             'contentType': 'application/json; odata=verbose'
         },
         data : JSON.stringify({
@@ -61,14 +63,16 @@ export function saveNextObjectNumberToServer(objectNumber: string) {
     })
 }
 
-export function updateNextObjectNumberOnServer(objectNumber: string) {
+export async function updateNextObjectNumberOnServer(objectNumber: string) {
+    const rawSecurityInfo = await fetchSecurityValidation()
+
     return $.ajax({
         url: `../_api/web/lists/getbytitle('Object_Number_Log')/items(1)`,
         method: 'POST',
         contentType: 'application/json; odata=verbose',
         headers: {
             'Accept': 'application/json; odata=verbose',
-            'X-RequestDigest': $('#__REQUESTDIGEST').val(),
+            'X-RequestDigest': rawSecurityInfo.d.GetContextWebInformation.FormDigestValue,
             'contentType': 'application/json; odata=verbose',
             'X-HTTP-Method': 'MERGE',
             'IF-MATCH': '*'
@@ -98,7 +102,9 @@ export function getUserDepartments(userIdentifier: string, adminStatus: boolean)
     })
 }
 
-export function createFormMetadataInHostList<T>(formData: T, listName: string) {
+export async function createFormMetadataInHostList<T>(formData: T, listName: string) {
+    const rawSecurityInfo = await fetchSecurityValidation()
+    
     const listReadyFormData = Object.assign({}, formData, { __metadata: {'type': getMetadataAttributeForList(listName)} })
     return $.ajax({
         url: `../_api/SP.AppContextSite(@target)//web/lists/getbytitle('${listName}')/items?@target='${hostWebUrl}'`,
@@ -106,14 +112,16 @@ export function createFormMetadataInHostList<T>(formData: T, listName: string) {
         contentType: 'application/json; odata=verbose',
         headers: {
             'Accept': 'application/json; odata=verbose',
-            'X-RequestDigest': $('#__REQUESTDIGEST').val(),
+            'X-RequestDigest': rawSecurityInfo.d.GetContextWebInformation.FormDigestValue,
             'contentType': 'application/json; odata=verbose'
         },
         data: JSON.stringify(listReadyFormData)
     })
 }
 
-export function updateFormMetadataInHostList<T extends SpIdentifiableDto>(formData: T, listName: string) {
+export async function updateFormMetadataInHostList<T extends SpIdentifiableDto>(formData: T, listName: string) {
+    const rawSecurityInfo = await fetchSecurityValidation()
+
     const listReadyFormData = Object.assign({}, formData, { __metadata: {'type': getMetadataAttributeForList(listName)} })
     return $.ajax({
         url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('${listName}')/items(${formData.Id})?@target='${hostWebUrl}'`,
@@ -121,7 +129,7 @@ export function updateFormMetadataInHostList<T extends SpIdentifiableDto>(formDa
         contentType: 'application/json; odata=verbose',
         headers: {
            'accept': 'application/json;odata=verbose',
-           'X-RequestDigest': jQuery('#__REQUESTDIGEST').val(),
+           'X-RequestDigest': rawSecurityInfo.d.GetContextWebInformation.FormDigestValue,
             'contentType': 'application/json; odata=verbose',
             'X-HTTP-Method': 'MERGE',
             'IF-MATCH': '*'
@@ -131,7 +139,9 @@ export function updateFormMetadataInHostList<T extends SpIdentifiableDto>(formDa
 }
 
 // note: does not need to be generic becuase it always receives a pdf array buffer regardless of metadata type
-export function createFormPdfInHostLibrary(pdfArrayBuffer, fileName: string, libraryName: string, folderName?: string) {
+export async function createFormPdfInHostLibrary(pdfArrayBuffer, fileName: string, libraryName: string, folderName?: string) {
+    const rawSecurityInfo = await fetchSecurityValidation()
+
     const folderPath = folderName ? '/' + folderName : ''
     return $.ajax({
         url: `../_api/SP.AppContextSite(@target)/web/getfolderbyserverrelativeurl('/records_transfers/${libraryName}${folderPath}')/files/add(overwrite=true,url='${fileName}')?@target='${hostWebUrl}'`,
@@ -139,14 +149,16 @@ export function createFormPdfInHostLibrary(pdfArrayBuffer, fileName: string, lib
         processData: false,
         headers: {
            'accept': 'application/json;odata=verbose',
-           'X-RequestDigest': jQuery('#__REQUESTDIGEST').val(),
+           'X-RequestDigest': rawSecurityInfo.d.GetContextWebInformation.FormDigestValue,
             'contentType': 'application/json; odata=verbose'
         },
         data: pdfArrayBuffer
     })
 }
 
-export function updateFormMetadataInHostLibrary<T extends SpIdentifiableDto>(data: T, library: string, fileName: string, folderName?: string) {
+export async function updateFormMetadataInHostLibrary<T extends SpIdentifiableDto>(data: T, library: string, fileName: string, folderName?: string) {
+    const rawSecurityInfo = await fetchSecurityValidation()
+
     const folderPath = folderName ? '/' + folderName : ''
     const listReadyFormData = Object.assign({}, data, { __metadata: {'type': getMetadataAttributeForList(library)} })
     return $.ajax({
@@ -155,7 +167,7 @@ export function updateFormMetadataInHostLibrary<T extends SpIdentifiableDto>(dat
         contentType: 'application/json; odata=verbose',
         headers: {
            'accept': 'application/json;odata=verbose',
-           'X-RequestDigest': jQuery('#__REQUESTDIGEST').val(),
+           'X-RequestDigest': rawSecurityInfo.d.GetContextWebInformation.FormDigestValue,
             'contentType': 'application/json; odata=verbose',
             'X-HTTP-Method': 'MERGE',
             'IF-MATCH': '*'
@@ -166,25 +178,32 @@ export function updateFormMetadataInHostLibrary<T extends SpIdentifiableDto>(dat
 
 // high level data access function that updates a previously saved form to the server
 export async function updateForm(formData: Request, intendedStatus: string) {
-    await updateFormMetadataInHostList<IStagedRequestDTO>(transformRequestToStagedRequestDto(formData, intendedStatus), REQUEST_HOST_LIST_NAME)
+    await updateFormMetadataInHostList<IStagedRequestDTO>(
+        transformRequestToStagedRequestDto(formData, intendedStatus),
+        REQUEST_HOST_LIST_NAME
+    )
 }
 
 // high level data access function that saves a new form to the server
 export async function createForm(formData: Request, intendedStatus: string) {
-    const spBatchData = await createFormMetadataInHostList<IStagedRequestDTO>(transformRequestToStagedRequestDto(formData, intendedStatus), REQUEST_HOST_LIST_NAME)
+    const spBatchData = await createFormMetadataInHostList<IStagedRequestDTO>(
+        transformRequestToStagedRequestDto(formData, intendedStatus),
+        REQUEST_HOST_LIST_NAME
+    )
     formData.spListId = spBatchData.d.Id
 }
 
 export async function deleteForm(formData: Request) {
-    await deleteFormComponent(REQUEST_HOST_LIST_NAME, formData.spListId)
+    const rawSecurityInfo = await fetchSecurityValidation()
+    await deleteFormComponent(REQUEST_HOST_LIST_NAME, formData.spListId, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue)
 }
 
-function deleteFormComponent(listToDeleteFrom: string, spListId: number) {
+function deleteFormComponent(listToDeleteFrom: string, spListId: number, requestDigest: string) {
     return $.ajax({
         url: `../_api/SP.AppContextSite(@target)/web/lists/getbytitle('${listToDeleteFrom}')/items(${spListId})?@target='${hostWebUrl}'`,
         method: 'POST',
         headers: {
-            'X-RequestDigest': $('#__REQUESTDIGEST').val(),
+            'X-RequestDigest': requestDigest,
             'X-HTTP-Method': 'DELETE',
             'IF-MATCH': '*'
         }
@@ -259,7 +278,8 @@ export function getRetentionCategoryData() {
 // high level async
 export async function checkIfFolderExistsInArchive(foldername: string): Promise<boolean> {
     try {
-        await fetchFolder(foldername)
+        const rawSecurityInfo = await fetchSecurityValidation()
+        await fetchFolder(foldername, rawSecurityInfo.d.GetContextWebInformation.FormDigestValue)
         return true
     } catch(error) {
         return false
@@ -267,19 +287,20 @@ export async function checkIfFolderExistsInArchive(foldername: string): Promise<
 }
 
 // helper for checkIfFolderExists
-function fetchFolder(foldername: string) {
+function fetchFolder(foldername: string, requestDigest: string) {
     return $.ajax({
         url: `../_api/SP.AppContextSite(@target)/web/getfolderbyserverrelativeurl('${archiveLibraryUrl}/${foldername}')?@target='${hostWebUrl}'`,
         type: 'GET',
         headers: {
            'accept': 'application/json;odata=verbose',
-           'X-RequestDigest': jQuery('#__REQUESTDIGEST').val(),
+           'X-RequestDigest': requestDigest,
             'contentType': 'application/json; odata=verbose'
         }
     })
 }
 
 export async function emailRecordLiaisonOnApproval(address: string, archiveUrl: string, departmentName: string) {
+    const rawSecurityInfo = await fetchSecurityValidation()
     await sendEmail(
         address,
         'Approved Record Transfer Form',
@@ -295,10 +316,11 @@ export async function emailRecordLiaisonOnApproval(address: string, archiveUrl: 
         Urim@byu.edu<br /><br /><br />
         Please do not reply to this email.
         `,
+        rawSecurityInfo.d.GetContextWebInformation.FormDigestValue
     )
 }
 
-function sendEmail(address: string, subject: string, body: string) {
+function sendEmail(address: string, subject: string, body: string, requestDigest: string) {
     return $.ajax({
         url: '../_api/SP.Utilities.Utility.SendEmail',
         method: 'POST',
@@ -306,7 +328,7 @@ function sendEmail(address: string, subject: string, body: string) {
         headers: {
             "Accept": "application/json;odata=verbose",
             "content-type": "application/json;odata=verbose",
-            "X-RequestDigest": jQuery('#__REQUESTDIGEST').val()
+            "X-RequestDigest": requestDigest
         },
         data: JSON.stringify({
             'properties': {
@@ -335,5 +357,14 @@ function getMetadataAttributeForList(listName: string): string {
 }
 
 export function createFormMetadataInFilemaker(data: IStagedBoxArchiveDTO) {
-    
+    // TODO make this work lol
+}
+
+function fetchSecurityValidation(): Promise<any> {
+    return $.ajax({
+        url: `../_api/contextinfo`,
+        method: "POST",
+        contentType: "application/json; odata=verbose",
+        headers: { "Accept": "application/json; odata=verbose" }
+    });
 }

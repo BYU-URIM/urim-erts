@@ -301,15 +301,15 @@ export default class CurrentFormStore {
             return false
         }
 
-        // next check to see if all required batch data filds are present
+        // next check to see if all required batch data fields are present
         if(!(batchData.departmentNumber && batchData.departmentName && batchData.departmentPhone && batchData.prepPersonName && batchData.departmentCollege
-            && batchData.responsablePersonName && batchData.departmentAddress && CurrentFormStore._dateRegEx.test(batchData.dateOfPreparation))) {
+            && batchData.responsablePersonName && batchData.departmentAddress && CurrentFormStore.dateRegEx.test(batchData.dateOfPreparation))) {
                 return false
         }
 
         for(let box of this.formData.boxes) {
-            if(!(box.boxNumber && box.description && CurrentFormStore._dateRegEx.test(box.beginningRecordsDate)
-                && CurrentFormStore._dateRegEx.test(box.endRecordsDate))) {
+            if(!(box.boxNumber && box.description && CurrentFormStore.dateRegEx.test(box.beginningRecordsDate)
+                && CurrentFormStore.dateRegEx.test(box.endRecordsDate) && (!box.retention || !isNaN(Number(box.retention))))) {
                 return false
             }
         }
@@ -319,8 +319,8 @@ export default class CurrentFormStore {
 
     @computed get canAddBoxes(): boolean {
         const { boxGroupData } = this.formData
-        return !!(boxGroupData.numberOfBoxes && !isNaN(boxGroupData.numberOfBoxes) && boxGroupData.numberOfBoxes > 0 && CurrentFormStore._dateRegEx.test(boxGroupData.beginningRecordsDate)
-            && CurrentFormStore._dateRegEx.test(boxGroupData.endRecordsDate) && boxGroupData.description)
+        return !!(boxGroupData.numberOfBoxes && !isNaN(boxGroupData.numberOfBoxes) && boxGroupData.numberOfBoxes > 0 && CurrentFormStore.dateRegEx.test(boxGroupData.beginningRecordsDate)
+            && CurrentFormStore.dateRegEx.test(boxGroupData.endRecordsDate) && boxGroupData.description && (!boxGroupData.retention || !isNaN(Number(boxGroupData.retention))))
     }
 
     @computed get functionNames(): Array<string> {
@@ -369,6 +369,7 @@ export default class CurrentFormStore {
             box.retentionFunction = this.formData.boxGroupData.retentionFunction
             box.reviewDate = this.formData.boxGroupData.reviewDate
             box.boxNumber = nextBoxNumber + i
+            this._recalculateReviewDate(box)
             this.formData.boxes.push(box)
         }
     }
@@ -402,7 +403,7 @@ export default class CurrentFormStore {
     private _recalculateReviewDate(box: Box) {
         if(box.retention && !isNaN(Number(box.retention))) {
             const date = new Date(box.endRecordsDate)
-            date.setFullYear(date.getFullYear() + Number(box.retention))
+            date.setTime(date.getTime() + Number(box.retention) * CurrentFormStore.YEAR_MS)
             box.reviewDate = getFormattedDate(date)
         } else {
             box.reviewDate = null
@@ -447,5 +448,6 @@ export default class CurrentFormStore {
         }
     }
 
-    static readonly _dateRegEx = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-](19|20)\d{2}$/
+    static readonly dateRegEx = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-](19|20)\d{2}$/
+    private static readonly YEAR_MS = 365 * 24 * 60 * 60 * 1000
 }
