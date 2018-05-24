@@ -8,7 +8,7 @@ import UserStore from './userStore';
 import * as dao from '../dataAccess/DataAccess'
 import * as utils from '../utils/utils'
 import { DEFAULT_OBJECT_NUMBER } from './storeConstants';
-import { Request, BatchData } from '../model/model';
+import { Request, BatchData, IFullDepartmentData } from '../model/model';
 import { generateFolderNameFromRequest } from '../utils/utils';
 import * as React from 'react';
 
@@ -68,8 +68,25 @@ export default class AppStore {
     
         // fetch the departments for which the user is a record liaison (form presets)
         const userDepartmentData = await dao.getUserDepartments(identifier, adminStatus)
-        userDepartmentData.d.results.forEach((element, index) => {
-            this.userStore.cacheUserDepartment(utils.transformDepDtoToFullDepData(element))
+        // map containing only unique departments (filters out duplicates)
+        // note: map is used becuase it is the most efficient way to find duplicates
+        const uniqueDepartmentsIterable: IterableIterator<IFullDepartmentData> = userDepartmentData.d.results
+            .map(rawDepData => utils.transformDepDtoToFullDepData(rawDepData))
+            .reduce((depMap: Map<string, IFullDepartmentData>, depData: IFullDepartmentData) => {
+                if(depData.departmentNumber) depMap.set(depData.departmentNumber, depData)
+                return depMap
+            }, new Map())
+            .values()
+        
+        // once the duplicates are removed, the values are sorted by department number
+        const uniqueDepartments = Array.from(uniqueDepartmentsIterable)
+            .sort((a,b) => {
+                return Number.parseInt(a.departmentNumber) < Number.parseInt(b.departmentNumber) ? -1 : 1
+            })
+        
+
+        uniqueDepartments.forEach((depData, index) => {
+            this.userStore.cacheUserDepartment(depData)
         })
 
         if(userDepartmentData.d.results && userDepartmentData.d.results.length) {
