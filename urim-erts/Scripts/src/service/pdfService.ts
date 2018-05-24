@@ -239,7 +239,7 @@ function createDocList(form: Request) {
 
                         // box description
                         { text: 'Box Description', bold: true, margin: [0, 20, 0, 5], fontSize: 14 },
-                        { text: `${box.description}`, color: '#9D9D9D', bold: true },
+                        { text: `${box.description}\n\n${box.contentsOfBox}`, color: '#9D9D9D', bold: true },
 
             ],
             styles: {
