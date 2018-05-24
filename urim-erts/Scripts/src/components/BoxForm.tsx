@@ -22,10 +22,10 @@ export class BoxForm extends React.Component<any, undefined> {
     validateComponent(componentId, value) {
         if(AppStore.getInstance().currentFormStore.isSubmissionAttempted) {
             if(componentId === 'retention') {
-                return isNaN(value) ? 'error' : null
+                return value && isNaN(value) ? 'error' : null
             } else if(componentId === 'beginningRecordsDate' || componentId === 'endRecordsDate') {
                 return /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4}$/.test(value) ? null : 'error'
-            } else {
+            } else if(componentId === 'description') {
                 return value ? null : 'error' // default validation - check not null
             }
         }
