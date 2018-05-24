@@ -18,14 +18,14 @@ export class TransferFormContainer extends React.Component<any, undefined> {
         if(this.appStore.currentFormStore.isAddBoxesAtttempted) {
             // first check for date inputs which require special validation
             if(componentId === 'beginningRecordsDate' || componentId === 'endRecordsDate') {
-                return CurrentFormStore.dateRegEx.test(value) ? null : 'error'
+                return this.appStore.currentFormStore.isValidDateEntry(value) ? null : 'error'
             } else if(componentId === 'numberOfBoxes') {
                 return isNaN(value) || value < 1 ? 'error' : null
             } else if(componentId === 'retention') {
-                return isNaN(value) ? 'error' : null
+                return value && isNaN(value) ? 'error' : null
+            } else if(componentId === 'description') {
+                return value ? null : 'error'
             }
-            // genereic input check, any value indicates valid input, empty value indicates error
-            return value ? null : 'error'
         }
         // if no submission has been attempted, everything is valid
         return null
@@ -125,8 +125,8 @@ export class TransferFormContainer extends React.Component<any, undefined> {
                             <FieldGroup id='numberOfBoxes' type='text' label='Number of Boxes*' span={4} value={this.appStore.currentFormStore.formData.boxGroupData['numberOfBoxes']}
                                 placeholder='12' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
                             <FieldGroup id='beginningRecordsDate' type='text' label='Beginning date of records*' span={4} value={this.appStore.currentFormStore.formData.boxGroupData['beginningRecordsDate']}
-                                placeholder='mm/dd/yyyy' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
-                            <FieldGroup type='text' label='Ending date of records*' span={4} placeholder='mm/dd/yyyy' value={this.appStore.currentFormStore.formData.boxGroupData['endRecordsDate']}
+                                placeholder='yyyy or mm/dd/yyyy' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
+                            <FieldGroup type='text' label='Ending date of records*' span={4} placeholder='yyyy or mm/dd/yyyy' value={this.appStore.currentFormStore.formData.boxGroupData['endRecordsDate']}
                                 id='endRecordsDate' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
                         </Row>
 

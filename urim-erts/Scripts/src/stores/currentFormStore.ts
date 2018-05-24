@@ -327,8 +327,8 @@ export default class CurrentFormStore {
 
     @computed get canAddBoxes(): boolean {
         const { boxGroupData } = this.formData
-        return !!(boxGroupData.numberOfBoxes && !isNaN(boxGroupData.numberOfBoxes) && boxGroupData.numberOfBoxes > 0 && CurrentFormStore.dateRegEx.test(boxGroupData.beginningRecordsDate)
-            && CurrentFormStore.dateRegEx.test(boxGroupData.endRecordsDate) && boxGroupData.description && (!boxGroupData.retention || !isNaN(Number(boxGroupData.retention))))
+        return !!(boxGroupData.numberOfBoxes && !isNaN(boxGroupData.numberOfBoxes) && boxGroupData.numberOfBoxes > 0 && this.isValidDateEntry(boxGroupData.beginningRecordsDate)
+            && this.isValidDateEntry(boxGroupData.endRecordsDate) && boxGroupData.description && (!boxGroupData.retention || !isNaN(Number(boxGroupData.retention))))
     }
 
     @computed get functionNames(): Array<string> {
@@ -366,10 +366,8 @@ export default class CurrentFormStore {
         const nextBoxNumber = this._getNextHighestBoxNumber()
         for(let i = 0; i < number; i++) {
             const box: Box = new Box()
-            box.beginningRecordsDate = this.formData.boxGroupData.beginningRecordsDate
             box.description = this.formData.boxGroupData.description
             box.contentsOfBox = this.formData.boxGroupData.contentsOfBox
-            box.endRecordsDate = this.formData.boxGroupData.endRecordsDate
             box.objectNumber = this.formData.boxGroupData.objectNumber
             box.permanent = this.formData.boxGroupData.permanent
             box.permanentReviewPeriod = this.formData.boxGroupData.permanentReviewPeriod
@@ -377,11 +375,21 @@ export default class CurrentFormStore {
             box.retentionCategory = this.formData.boxGroupData.retentionCategory
             box.retentionFunction = this.formData.boxGroupData.retentionFunction
             box.reviewDate = this.formData.boxGroupData.reviewDate
+
+            // beginning / end records dates may be in full date format (mm/dd/yyyy) or just year (yyyy)
+            // if just a year is given, default the full date to 01/01/yyyy
+            box.beginningRecordsDate = CurrentFormStore.yearRegEx.test(this.formData.boxGroupData.beginningRecordsDate)
+                ? `01/01/${this.formData.boxGroupData.beginningRecordsDate}`
+                : this.formData.boxGroupData.beginningRecordsDate
+            box.endRecordsDate = CurrentFormStore.yearRegEx.test(this.formData.boxGroupData.endRecordsDate)
+                ? `01/01/${this.formData.boxGroupData.endRecordsDate}`
+                : this.formData.boxGroupData.endRecordsDate
+
             box.boxNumber = nextBoxNumber + i
             this._recalculateReviewDate(box)
             this.formData.boxes.push(box)
         }
-    }
+    }    
 
     private _getNextHighestBoxNumber() {
         if(!this.formData.boxes.length) {
@@ -457,6 +465,11 @@ export default class CurrentFormStore {
         }
     }
 
+    isValidDateEntry(date: string) {
+        return CurrentFormStore.dateRegEx.test(date) || CurrentFormStore.yearRegEx.test(date)
+    }
+
     static readonly dateRegEx = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-](19|20)\d{2}$/
+    static readonly yearRegEx = /^[1-2][0-9]{3}$/
     private static readonly YEAR_MS = 365 * 24 * 60 * 60 * 1000
 }
