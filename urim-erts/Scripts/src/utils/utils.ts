@@ -76,7 +76,8 @@ export function transformRequestToStagedBoxArchiveDTOs(request: Request): Array<
             Permanent_x0020_Review_x0020_Period: box.permanentReviewPeriod,
             Retention: box.retention,
             Review_x0020_Date: box.reviewDate,
-            Description0: formatLongStringForSaveKey(box.description),
+            Description0: box.description,
+            Contents_x0020_of_x0020_Box: box.contentsOfBox,
             Submitter_x0020_Email: request.batchData.submitterEmail,
             Id: request.spListId,
             To_x0020_Be_x0020_Archived: box.permanent ? 'Pending Decision' as ToBeArchivedOption : ''
@@ -104,6 +105,7 @@ export function transformArchiveDtoToRecentQueueDto(archiveDto: IStagedBoxArchiv
         Date_x0020_of_x0020_Preparation: archiveDto.Date_x0020_of_x0020_Prep_x002e_,
         Special_x0020_Pickup_x0020_Instr: archiveDto.Special_x0020_Pickup_x0020_Instructions,
         Box_x0020_Description: archiveDto.Description0,
+        Contents_x0020_of_x0020_Box: archiveDto.Contents_x0020_of_x0020_Box,
         Review_x0020_Date: archiveDto.Review_x0020_Date,
         Changed: archiveDto.Department_x0020_Info_x0020_Needs_x0020_Update === 'yes'? true : false
     }
@@ -191,23 +193,6 @@ export function incrementObjectNumber(objectNumber) {
     // assumes object number is numeric string
     const temp = parseInt(objectNumber)
     return `${temp+1}` //increase numberic portion of object number by 1
-}
-
-// this function accepts a string of highly variable length and formats it into a short phrase key
-// if the string is under a threshold length, it will not be changed, otherwise it will be trimmed
-// to an appropriate length
-export function formatLongStringForSaveKey(string) {
-    // if the string is under 50 characters long, the whole string will be the phrase key
-    if(string.length < 50) {
-        return string
-    } else if(string.split('\n').length < 50) {
-        // if the  string has a newline character within the first characters, the first line of string
-        // will be returned as the phrase key
-        return string.split('\n')[0]
-    } else {
-        // otherwise the first 50 characters will be returned as the phrase key
-        return string.substr(0, 49)
-    }
 }
 
 export function generateFolderNameFromRequest(request: Request) {

@@ -12,6 +12,7 @@ export class Box {
     @observable retention: string
     @observable permanent: string
     @observable description: string
+    @observable contentsOfBox: string
     @observable objectNumber?: string // will only be added once the form is archived
     @observable permanentReviewPeriod?: string
     @observable reviewDate?: string
@@ -59,6 +60,7 @@ export interface SpIdentifiableDto {
 }
 
 //When a request is submitted, Batch Data, status, spListID, and boxes are combined into one object and saved into the Request Host List
+// This interface defines what is saved in the temporary sp list containing active requests
 export interface IStagedRequestDTO extends SpIdentifiableDto {
     Title: '_'
     prepPersonName: string
@@ -101,6 +103,7 @@ export interface IStagedBoxArchiveDTO extends SpIdentifiableDto {
     Retention: string
     Review_x0020_Date: string
     Description0: string
+    Contents_x0020_of_x0020_Box: string
     Submitter_x0020_Email: string
     To_x0020_Be_x0020_Archived: ToBeArchivedOption
 }
@@ -127,6 +130,7 @@ export interface IStagedBoxRecentQueueDTO {
     Date_x0020_of_x0020_Preparation: string
     Special_x0020_Pickup_x0020_Instr: string
     Box_x0020_Description: string
+    Contents_x0020_of_x0020_Box: string
     Review_x0020_Date: string
     Changed: boolean
 }

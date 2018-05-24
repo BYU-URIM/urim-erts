@@ -74,8 +74,10 @@ export class BoxForm extends React.Component<any, undefined> {
         
                         {/* Description */}
                         <Row>
-                            <FieldGroup type='textarea' label='Description*' span={12} placeholder='description' value={this.props.box['description']}
+                            <FieldGroup type='text' label='Description*' span={9} placeholder='description' value={this.props.box['description']}
                                 id='description' onChange={this.updateBoxFormComponent} validation={this.validateComponent} />
+                            <FieldGroup type='textarea' label='Contents of Box' span={12} placeholder='contents of box' value={this.props.box['contentsOfBox']}
+                                id='contentsOfBox' onChange={this.updateBoxFormComponent} validation={this.validateComponent} />
                         </Row>
                         <Row>
                             <Col lg={10} md={10} sm={10} />
