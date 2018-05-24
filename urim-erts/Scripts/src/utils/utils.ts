@@ -195,23 +195,6 @@ export function incrementObjectNumber(objectNumber) {
     return `${temp+1}` //increase numberic portion of object number by 1
 }
 
-// this function accepts a string of highly variable length and formats it into a short phrase key
-// if the string is under a threshold length, it will not be changed, otherwise it will be trimmed
-// to an appropriate length
-// export function formatLongStringForSaveKey(string) {
-//     // if the string is under 50 characters long, the whole string will be the phrase key
-//     if(string.length < 50) {
-//         return string
-//     } else if(string.split('\n').length < 50) {
-//         // if the  string has a newline character within the first characters, the first line of string
-//         // will be returned as the phrase key
-//         return string.split('\n')[0]
-//     } else {
-//         // otherwise the first 50 characters will be returned as the phrase key
-//         return string.substr(0, 49)
-//     }
-// }
-
 export function generateFolderNameFromRequest(request: Request) {
     return `${request.batchData.departmentNumber} - ${request.batchData.departmentName}`
 }
