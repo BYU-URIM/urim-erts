@@ -39,6 +39,10 @@ export const NewRequestModule = (props) => {
         AppStore.getInstance().currentFormStore.displayNewRequestForm(fullDepartment)
     }
 
+    const getAdminDropdownOptions = () => {
+        return ["", ...props.userDepartments.map((dep: IFullDepartmentData) => `${dep.departmentNumber} - ${dep.departmentName}`)]
+    }
+
     return (
         <Jumbotron>
             <h2>New Record Transfer Request</h2>
@@ -51,7 +55,7 @@ export const NewRequestModule = (props) => {
                 props.isNewRequestDepartmentSelection
                 ? (
                     props.isAdmin
-                    ? <FieldGroup type='select' label='Select a Department' span={6} placeholder='select y/n' options={props.userDepartments.map((dep: IFullDepartmentData) => `${dep.departmentNumber} - ${dep.departmentName}`).sort()}
+                    ? <FieldGroup type='select' label='Select a Department' span={6} placeholder='select y/n' options={getAdminDropdownOptions()}
                         id='departmentSelect' onChange={(id: string, value: string) => handleDepartmentSelectionFromAdminDropdown(value)} className='newRequestAdminDropdown' />
 
                     : <ListGroup id='newRequestItemSelectionList'>
