@@ -150,8 +150,10 @@ export class TransferFormContainer extends React.Component<any, undefined> {
 
                         {/* Description */}
                         <Row>
-                            <FieldGroup type='textarea' label='Description*' span={12} placeholder='description' value={this.appStore.currentFormStore.formData.boxGroupData['description']}
+                            <FieldGroup type='text' label='Description*' span={9} placeholder='description' value={this.appStore.currentFormStore.formData.boxGroupData['description']}
                                 id='description' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
+                            <FieldGroup type='textarea' label='Contents of Box' span={12} placeholder='contents of box' value={this.appStore.currentFormStore.formData.boxGroupData['contentsOfBox']}
+                                id='contentsOfBox' onChange={this.appStore.currentFormStore.updateFormBoxGroupData} validation={this.validateBoxGroupComponent} />
                         </Row>
 
                         <Row>

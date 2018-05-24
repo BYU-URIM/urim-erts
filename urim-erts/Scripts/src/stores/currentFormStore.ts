@@ -5,7 +5,7 @@ import AdminStore from '../stores/adminStore'
 import AppStore from '../stores/appStore'
 import { getFormattedDateToday, getFormattedDate, transformRequestToStagedBoxArchiveDTOs, generateFolderNameFromRequest, transformArchiveDtoToRecentQueueDto, transformArchiveDtoToPendingArchivalDto } from '../utils/utils';
 import SettingsStore from '../stores/settingsStore'
-import { incrementObjectNumber, formatLongStringForSaveKey } from '../utils/utils'
+import { incrementObjectNumber } from '../utils/utils'
 import { observable, action, runInAction, computed } from 'mobx';
 import { getCurrentUser, updateFormMetadataInHostLibrary, createFormPdfInHostLibrary, PENDING_ARCHIVAL_LIBRARY_NAME } from '../dataAccess/dataAccess';
 import * as dao from '../dataAccess/DataAccess'
@@ -100,6 +100,10 @@ export default class CurrentFormStore {
             this._applyDispositionUpdate(this.formData.boxGroupData, newValue ? 'Yes' : 'No')
         }
         if(id === 'retentionCategory') this._applyRetentionCategoryUpdate(this.formData.boxGroupData, newValue)
+        if(id === 'description' && newValue.length > 50) {
+            // limit description to first 50 characters
+            this.formData.boxGroupData['description'] = this.formData.boxGroupData['description'].slice(0, 51)
+        }
     }
 
     @action updateFormSingleBoxData(id: string, newValue: any, index: number) {
@@ -111,6 +115,10 @@ export default class CurrentFormStore {
             this._applyDispositionUpdate(this.formData.boxes[index], newValue ? 'Yes' : 'No')
         }
         if(id === 'retentionCategory') this._applyRetentionCategoryUpdate(this.formData.boxes[index], newValue)
+        if(id === 'description' && newValue.length > 50) {
+            // limit description to first 50 characters
+            this.formData.boxes[index]['description'] = this.formData.boxes[index]['description'].slice(0, 51)
+        }
     }
 
     @action removeBoxFromCurrentForm(index: number) {
@@ -360,6 +368,7 @@ export default class CurrentFormStore {
             const box: Box = new Box()
             box.beginningRecordsDate = this.formData.boxGroupData.beginningRecordsDate
             box.description = this.formData.boxGroupData.description
+            box.contentsOfBox = this.formData.boxGroupData.contentsOfBox
             box.endRecordsDate = this.formData.boxGroupData.endRecordsDate
             box.objectNumber = this.formData.boxGroupData.objectNumber
             box.permanent = this.formData.boxGroupData.permanent

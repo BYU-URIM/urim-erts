@@ -19,7 +19,8 @@ const EMPTY_BOX: Box = {
     retentionCategory: null,
     retention: null,
     permanent: null,
-    description: null
+    description: null,
+    contentsOfBox: null
 }
 
 const EMPTY_BOX_GROUP_DATA: BoxGroupData = Object.assign({}, EMPTY_BOX, {
@@ -55,6 +56,7 @@ export const EMPTY_STAGED_BOX_DTO: IStagedBoxArchiveDTO = {
     Retention: null,
     Review_x0020_Date: null,
     Description0: null,
+    Contents_x0020_of_x0020_Box: null,
     Submitter_x0020_Email: null,
     Id: 0,
     To_x0020_Be_x0020_Archived: 'Pending Decision'

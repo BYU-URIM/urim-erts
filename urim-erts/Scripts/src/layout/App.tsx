@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as PropTypes from 'prop-types'
 import { Button, PageHeader } from 'react-bootstrap';
 import { AppNavigation } from '../components/AppNavigation'
 import { ErrorMessage } from '../components/ErrorMessage'
@@ -13,9 +14,9 @@ import { autobind } from 'core-decorators';
 export class App extends React.Component<any, undefined> {
     private appStore = AppStore.getInstance()
 
-    static contextTypes = { router: React.PropTypes.object.isRequired }
+    static contextTypes = { router: PropTypes.object.isRequired }
 
-    render() {
+    render() {        
         return (
             <div className='appContainer'>
                 <AppNavigation
